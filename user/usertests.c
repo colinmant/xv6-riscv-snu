@@ -2617,7 +2617,9 @@ struct test {
   {forkfork, "forkfork"},
   {forkforkfork, "forkforkfork"},
   {reparent2, "reparent2"},
+#ifndef SNU
   {mem, "mem"},
+#endif
   {sharedfd, "sharedfd"},
   {fourfiles, "fourfiles"},
   {createdelete, "createdelete"},
@@ -2633,11 +2635,15 @@ struct test {
   {dirfile, "dirfile"},
   {iref, "iref"},
   {forktest, "forktest"},
+#ifndef SNU
   {sbrkbasic, "sbrkbasic"},
   {sbrkmuch, "sbrkmuch"},
+#endif
   {kernmem, "kernmem"},
   {MAXVAplus, "MAXVAplus"},
+#ifndef SNU
   {sbrkfail, "sbrkfail"},
+#endif
   {sbrkarg, "sbrkarg"},
   {validatetest, "validatetest"},
   {bsstest, "bsstest"},
@@ -3065,8 +3071,13 @@ int
 drivetests(int quick, int continuous, char *justone) {
   do {
     printf("usertests starting\n");
+#ifdef SNU
+    int alloc0 = memstat(0, 0, 0, 0, 0);
+    int alloc1 = 0;
+#else
     int free0 = countfree();
     int free1 = 0;
+#endif
     if (runtests(quicktests, justone, continuous)) {
       if(continuous != 2) {
         return 1;
@@ -3081,8 +3092,13 @@ drivetests(int quick, int continuous, char *justone) {
         }
       }
     }
+#ifdef SNU
+    if((alloc1 = memstat(0, 0, 0, 0, 0)) > alloc0) {
+      printf("FAILED -- lost some free pages %d (out of %d)\n", alloc0, alloc1);
+#else
     if((free1 = countfree()) < free0) {
       printf("FAILED -- lost some free pages %d (out of %d)\n", free1, free0);
+#endif
       if(continuous != 2) {
         return 1;
       }

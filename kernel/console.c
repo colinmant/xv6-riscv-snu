@@ -141,6 +141,10 @@ consoleintr(int c)
   case C('P'):  // Print process list.
     procdump();
     break;
+#ifdef SNU
+  case C('X'):
+    mallocstat();
+#endif
   case C('U'):  // Kill line.
     while(cons.e != cons.w &&
           cons.buf[(cons.e-1) % INPUT_BUF_SIZE] != '\n'){

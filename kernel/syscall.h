@@ -20,3 +20,8 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#ifdef SNU
+#define SYS_memstat 22
+#define SYS_ktest1  23
+#define SYS_ktest2  24
+#endif

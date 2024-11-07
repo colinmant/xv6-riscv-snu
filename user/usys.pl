@@ -36,3 +36,7 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
+# SNU
+entry("memstat");
+entry("ktest1");
+entry("ktest2");

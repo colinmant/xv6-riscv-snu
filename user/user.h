@@ -41,3 +41,12 @@ void *memcpy(void *, const void *, uint);
 // umalloc.c
 void* malloc(uint);
 void free(void*);
+
+#ifdef SNU
+// xswap.c
+int memstat(int *, int *, int *, int *, int *);
+
+// ktest.c
+void *ktest1(int, int);
+void ktest2(int, void *);
+#endif

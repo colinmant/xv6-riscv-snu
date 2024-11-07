@@ -26,8 +26,32 @@ struct {
 void
 kinit()
 {
+#ifdef SNU
+  printf("Physical memory layout:\n");
+  printf("Kernel:      0x%lx - 0x%lx (%d MB, %d pages)\n",
+      (uint64) KERNBASE, (uint64) PGROUNDUP((uint64)end),
+      (int) ((PGROUNDUP((uint64)end) - KERNBASE) >> 20),
+      (int) ((PGROUNDUP((uint64)end) - KERNBASE) >> 12));
+  printf("ZONE_FIXED:  0x%lx - 0x%lx (%d MB, %d pages)\n",
+      (uint64) PGROUNDUP((uint64)end), (uint64) NORMAL_START,
+      (int) ((NORMAL_START - PGROUNDUP((uint64)end)) >> 20),
+      (int) ((NORMAL_START - PGROUNDUP((uint64)end)) >> 12));
+  printf("ZONE_NORMAL: 0x%lx - 0x%lx (%d MB, %d pages)\n",
+      (uint64) NORMAL_START, (uint64) PHYSTOP,
+      (int) ((PHYSTOP - NORMAL_START) >> 20),
+      (int) ((PHYSTOP - NORMAL_START) >> 12));
+  printf("ZONE_ZMEM:   0x%lx - 0x%lx (%d MB, %d pages)\n",
+      (uint64) PHYSTOP, (uint64) ZMEMSTOP,
+      (int) ((ZMEMSTOP - PHYSTOP) >> 20),
+      (int) ((ZMEMSTOP - PHYSTOP) >> 12));
+#endif
   initlock(&kmem.lock, "kmem");
+#ifdef SNU
+  // ZONE_NORMAL, ZONE_ZMEM should be initialized separately
+  freerange(end, (void*)NORMAL_START);
+#else
   freerange(end, (void*)PHYSTOP);
+#endif
 }
 
 void
