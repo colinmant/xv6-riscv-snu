@@ -1,5 +1,8 @@
 // init: The initial user-level program
 
+#ifdef SNU
+#include "kernel/param.h"
+#endif
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "kernel/spinlock.h"

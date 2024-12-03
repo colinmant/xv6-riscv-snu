@@ -91,3 +91,13 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#ifdef SNU
+uint64
+sys_rdtime(void)
+{
+  uint64 t = r_time();
+
+  return t;
+}
+#endif

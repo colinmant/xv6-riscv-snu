@@ -503,3 +503,16 @@ sys_pipe(void)
   }
   return 0;
 }
+
+uint64
+sys_pwd(void)
+{
+
+  // FILL HERE
+
+
+
+
+
+  return 0;
+}

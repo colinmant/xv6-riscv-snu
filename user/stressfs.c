@@ -7,6 +7,9 @@
 //    for (i = 0; i < 40000; i++)
 //      asm volatile("");
 
+#ifdef SNU
+#include "kernel/param.h"
+#endif
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"

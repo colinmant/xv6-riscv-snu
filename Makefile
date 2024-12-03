@@ -130,7 +130,7 @@ $U/_forktest: $U/forktest.o $(ULIB)
 	$(OBJDUMP) -S $U/_forktest > $U/forktest.asm
 
 mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
-	gcc -Werror -Wall -I. -o mkfs/mkfs mkfs/mkfs.c
+	gcc -Werror -Wall -DSNU -I. -o mkfs/mkfs mkfs/mkfs.c
 
 # Prevent deletion of intermediate files, e.g. cat.o, after first build, so
 # that disk image changes after first build are persistent until clean.  More
@@ -155,6 +155,8 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_pwd\
+	$U/_fsperf\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
@@ -179,13 +181,22 @@ ifndef CPUS
 CPUS := 3
 endif
 
-QEMUOPTS = -machine virt -bios none -kernel $K/kernel -m 128M -smp $(CPUS) -nographic
+# SNU
+#QEMUOPTS = -machine virt -bios none -kernel $K/kernel -m 128M -smp $(CPUS) -nographic
+QEMUOPTS = -machine virt -bios none -kernel $K/kernel -m 128M -nographic
 QEMUOPTS += -global virtio-mmio.force-legacy=false
 QEMUOPTS += -drive file=fs.img,if=none,format=raw,id=x0
 QEMUOPTS += -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+# SNU
+QEMUOPTS_CPU  = -smp $(CPUS)
+QEMUOPTS_PERF = -smp 1
 
 qemu: $K/kernel fs.img
-	$(QEMU) $(QEMUOPTS)
+	$(QEMU) $(QEMUOPTS) $(QEMUOPTS_CPU)
+
+# SNU
+perf: $K/kernel fs.img
+	$(QEMU) $(QEMUOPTS) $(QEMUOPTS_PERF) -icount shift=0
 
 .gdbinit: .gdbinit.tmpl-riscv
 	sed "s/:1234/:$(GDBPORT)/" < $^ > $@

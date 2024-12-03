@@ -20,3 +20,7 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#ifdef SNU
+#define SYS_rdtime 22
+#define SYS_pwd    23
+#endif

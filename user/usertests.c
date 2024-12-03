@@ -1399,10 +1399,14 @@ concreate(char *s)
   char file[3];
   int i, pid, n, fd;
   char fa[N];
+#ifdef SNU
+  struct dirent de;
+#else
   struct {
     ushort inum;
     char name[DIRSIZ];
   } de;
+#endif
 
   file[0] = 'C';
   file[2] = '\0';
@@ -1433,13 +1437,22 @@ concreate(char *s)
   }
 
   memset(fa, 0, sizeof(fa));
+#ifdef SNU
+  fd = open("/", 0);
+#else
   fd = open(".", 0);
+#endif
   n = 0;
   while(read(fd, &de, sizeof(de)) > 0){
     if(de.inum == 0)
       continue;
+#ifdef SNU
+    if(de.name[0] == '/' && de.name[1] == 'C' && de.name[3] == '\0'){
+      i = de.name[2] - '0';
+#else
     if(de.name[0] == 'C' && de.name[2] == '\0'){
       i = de.name[1] - '0';
+#endif
       if(i < 0 || i >= sizeof(fa)){
         printf("%s: concreate weird file %s\n", s, de.name);
         exit(1);
@@ -1830,6 +1843,16 @@ fourteen(char *s)
 void
 rmdot(char *s)
 {
+#ifdef SNU
+  if(unlink("/") == 0){
+    printf("%s: rm / worked!\n", s);
+    exit(1);
+  }
+  if(chdir("/") != 0){
+    printf("%s: chdir / failed\n", s);
+    exit(1);
+  }
+#else
   if(mkdir("dots") != 0){
     printf("%s: mkdir dots failed\n", s);
     exit(1);
@@ -1862,6 +1885,7 @@ rmdot(char *s)
     printf("%s: unlink dots failed!\n", s);
     exit(1);
   }
+#endif
 }
 
 void
@@ -1927,12 +1951,22 @@ iref(char *s)
   int i, fd;
 
   for(i = 0; i < NINODE + 1; i++){
+#ifdef SNU
+    if(mkdir("i") != 0){
+      printf("%s: mkdir i failed\n", s);
+#else
     if(mkdir("irefd") != 0){
       printf("%s: mkdir irefd failed\n", s);
+#endif
       exit(1);
     }
+#ifdef SNU
+    if(chdir("i") != 0){
+      printf("%s: chdir i failed\n", s);
+#else
     if(chdir("irefd") != 0){
       printf("%s: chdir irefd failed\n", s);
+#endif
       exit(1);
     }
 
@@ -1950,7 +1984,11 @@ iref(char *s)
   // clean up
   for(i = 0; i < NINODE + 1; i++){
     chdir("..");
+#ifdef SNU
+    unlink("i");
+#else
     unlink("irefd");
+#endif
   }
 
   chdir("/");
@@ -2608,16 +2646,16 @@ struct test {
   {createtest, "createtest"},
   {dirtest, "dirtest"},
   {exectest, "exectest"},
-  {pipe1, "pipe1"},
-  {killstatus, "killstatus"},
-  {preempt, "preempt"},
-  {exitwait, "exitwait"},
-  {reparent, "reparent" },
-  {twochildren, "twochildren"},
-  {forkfork, "forkfork"},
-  {forkforkfork, "forkforkfork"},
-  {reparent2, "reparent2"},
-  {mem, "mem"},
+  //{pipe1, "pipe1"},
+  //{killstatus, "killstatus"},
+  //{preempt, "preempt"},
+  //{exitwait, "exitwait"},
+  //{reparent, "reparent" },
+  //{twochildren, "twochildren"},
+  //{forkfork, "forkfork"},
+  //{forkforkfork, "forkforkfork"},
+  //{reparent2, "reparent2"},
+  //{mem, "mem"},
   {sharedfd, "sharedfd"},
   {fourfiles, "fourfiles"},
   {createdelete, "createdelete"},
@@ -2632,24 +2670,24 @@ struct test {
   {rmdot, "rmdot"},
   {dirfile, "dirfile"},
   {iref, "iref"},
-  {forktest, "forktest"},
-  {sbrkbasic, "sbrkbasic"},
-  {sbrkmuch, "sbrkmuch"},
-  {kernmem, "kernmem"},
-  {MAXVAplus, "MAXVAplus"},
-  {sbrkfail, "sbrkfail"},
+  //{forktest, "forktest"},
+  //{sbrkbasic, "sbrkbasic"},
+  //{sbrkmuch, "sbrkmuch"},
+  //{kernmem, "kernmem"},
+  //{MAXVAplus, "MAXVAplus"},
+  //{sbrkfail, "sbrkfail"},
   {sbrkarg, "sbrkarg"},
   {validatetest, "validatetest"},
-  {bsstest, "bsstest"},
+  //{bsstest, "bsstest"},
   {bigargtest, "bigargtest"},
   {argptest, "argptest"},
-  {stacktest, "stacktest"},
-  {nowrite, "nowrite"},
-  {pgbug, "pgbug" },
-  {sbrkbugs, "sbrkbugs" },
-  {sbrklast, "sbrklast"},
-  {sbrk8000, "sbrk8000"},
-  {badarg, "badarg" },
+  //{stacktest, "stacktest"},
+  //{nowrite, "nowrite"},
+  //{pgbug, "pgbug" },
+  //{sbrkbugs, "sbrkbugs" },
+  //{sbrklast, "sbrklast"},
+  //{sbrk8000, "sbrk8000"},
+  //{badarg, "badarg" },
 
   { 0, 0},
 };

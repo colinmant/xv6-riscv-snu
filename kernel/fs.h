@@ -53,8 +53,16 @@ struct dinode {
 // Directory is a file containing a sequence of dirent structures.
 #define DIRSIZ 14
 
+#ifdef SNU
+struct dirent {
+  ushort inum;            // inode number
+  char padding[20];       // reserved space for custom implementation
+  char name[MAXPATH];     // full pathname
+};
+#else
 struct dirent {
   ushort inum;
   char name[DIRSIZ];
 };
+#endif
 
